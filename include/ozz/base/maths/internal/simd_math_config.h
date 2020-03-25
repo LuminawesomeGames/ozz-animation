@@ -85,6 +85,11 @@
 #define OZZ_SIMD_SSEx  // OZZ_SIMD_SSEx is the generic flag for SSE support
 #endif
 
+#if defined(__ARM_NEON) || defined(OZZ_SIMD_ARM_NEON)
+#include <arm_neon.h>
+#define OZZ_SIMD_ARM_NEON // Arm NEON is available.
+#endif
+
 // End of SIMD instruction detection
 #endif  // !OZZ_BUILD_SIMD_REF
 
