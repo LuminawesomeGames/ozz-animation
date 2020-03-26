@@ -100,32 +100,38 @@ union SimdIF4 {
 namespace simd_float4 {
 
 OZZ_INLINE SimdFloat4 zero() {
-  const SimdFloat4 ret = {0.f, 0.f, 0.f, 0.f};
+  const float _zero[4] = {0.f, 0.f, 0.f, 0.f};
+  const SimdFloat4 ret = vld1q_f32( _zero );
   return ret;
 }
 
 OZZ_INLINE SimdFloat4 one() {
-  const SimdFloat4 ret = {1.f, 1.f, 1.f, 1.f};
+  const float _one[4] = {1.f, 1.f, 1.f, 1.f};
+  const SimdFloat4 ret = vld1q_f32( _one );
   return ret;
 }
 
 OZZ_INLINE SimdFloat4 x_axis() {
-  const SimdFloat4 ret = {1.f, 0.f, 0.f, 0.f};
+  const float _x[4] = {1.f, 0.f, 0.f, 0.f};
+  const SimdFloat4 ret = vld1q_f32( _x );
   return ret;
 }
 
 OZZ_INLINE SimdFloat4 y_axis() {
-  const SimdFloat4 ret = {0.f, 1.f, 0.f, 0.f};
+  const float _y[4] = {0.f, 1.f, 0.f, 0.f};
+  const SimdFloat4 ret = vld1q_f32( _y );
   return ret;
 }
 
 OZZ_INLINE SimdFloat4 z_axis() {
-  const SimdFloat4 ret = {0.f, 0.f, 1.f, 0.f};
+  const float _z[4] = {0.f, 0.f, 1.f, 0.f};
+  const SimdFloat4 ret = vld1q_f32( _z );
   return ret;
 }
 
 OZZ_INLINE SimdFloat4 w_axis() {
-  const SimdFloat4 ret = {0.f, 0.f, 0.f, 1.f};
+  const float _w[4] = {0.f, 0.f, 0.f, 1.f};
+  const SimdFloat4 ret = vld1q_f32( _w );
   return ret;
 }
 
@@ -187,30 +193,39 @@ OZZ_INLINE SimdFloat4 FromInt(_SimdInt4 _i) {
 }
 }  // namespace simd_float4
 
-OZZ_INLINE float GetX(_SimdFloat4 _v) { return _v.x; }
+OZZ_INLINE float GetX(_SimdFloat4 _v) { return _v[0]; }
 
-OZZ_INLINE float GetY(_SimdFloat4 _v) { return _v.y; }
+OZZ_INLINE float GetY(_SimdFloat4 _v) { return _v[1]; }
 
-OZZ_INLINE float GetZ(_SimdFloat4 _v) { return _v.z; }
+OZZ_INLINE float GetZ(_SimdFloat4 _v) { return _v[2]; }
 
-OZZ_INLINE float GetW(_SimdFloat4 _v) { return _v.w; }
+OZZ_INLINE float GetW(_SimdFloat4 _v) { return _v[3]; }
+
 OZZ_INLINE SimdFloat4 SetX(_SimdFloat4 _v, _SimdFloat4 _f) {
-  const SimdFloat4 ret = {_f.x, _v.y, _v.z, _v.w};
+  float _floats[4];
+  vst1q_f32(_floats, _f);
+  const SimdFloat4 ret = vld1q_lane_f32(_floats, _v, 0);
   return ret;
 }
 
 OZZ_INLINE SimdFloat4 SetY(_SimdFloat4 _v, _SimdFloat4 _f) {
-  const SimdFloat4 ret = {_v.x, _f.x, _v.z, _v.w};
+  float _floats[4];
+  vst1q_f32(_floats, _f);
+  const SimdFloat4 ret = vld1q_lane_f32(_floats, _v, 1);
   return ret;
 }
 
 OZZ_INLINE SimdFloat4 SetZ(_SimdFloat4 _v, _SimdFloat4 _f) {
-  const SimdFloat4 ret = {_v.x, _v.y, _f.x, _v.w};
+  float _floats[4];
+  vst1q_f32(_floats, _f);
+  const SimdFloat4 ret = vld1q_lane_f32(_floats, _v, 2);
   return ret;
 }
 
 OZZ_INLINE SimdFloat4 SetW(_SimdFloat4 _v, _SimdFloat4 _f) {
-  const SimdFloat4 ret = {_v.x, _v.y, _v.z, _f.x};
+  float _floats[4];
+  vst1q_f32(_floats, _f);
+  const SimdFloat4 ret = vld1q_lane_f32(_floats, _v, 3);
   return ret;
 }
 
@@ -223,28 +238,29 @@ OZZ_INLINE SimdFloat4 SetI(_SimdFloat4 _v, _SimdFloat4 _f, int _ith) {
 
 OZZ_INLINE void StorePtr(_SimdFloat4 _v, float* _f) {
   assert(!(reinterpret_cast<uintptr_t>(_f) & 0xf) && "Invalid alignment");
-  _f[0] = _v.x;
-  _f[1] = _v.y;
-  _f[2] = _v.z;
-  _f[3] = _v.w;
+  vst1q_f32(_f, _v);
 }
 
 OZZ_INLINE void Store1Ptr(_SimdFloat4 _v, float* _f) {
   assert(!(reinterpret_cast<uintptr_t>(_f) & 0xf) && "Invalid alignment");
-  _f[0] = _v.x;
+  vst1q_lane_f32( _f, _v, 0 );
 }
 
 OZZ_INLINE void Store2Ptr(_SimdFloat4 _v, float* _f) {
   assert(!(reinterpret_cast<uintptr_t>(_f) & 0xf) && "Invalid alignment");
-  _f[0] = _v.x;
-  _f[1] = _v.y;
+  float _floats[4];
+  vst1q_f32(_floats, _v);
+  _f[0] = _floats[0];
+  _f[1] = _floats[1];
 }
 
 OZZ_INLINE void Store3Ptr(_SimdFloat4 _v, float* _f) {
   assert(!(reinterpret_cast<uintptr_t>(_f) & 0xf) && "Invalid alignment");
-  _f[0] = _v.x;
-  _f[1] = _v.y;
-  _f[2] = _v.z;
+  float _floats[4];
+  vst1q_f32(_floats, _v);
+  _f[0] = _floats[0];
+  _f[1] = _floats[1];
+  _f[2] = _floats[2];
 }
 
 OZZ_INLINE void StorePtrU(_SimdFloat4 _v, float* _f) {
